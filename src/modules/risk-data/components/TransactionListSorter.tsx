@@ -32,12 +32,11 @@ export default function TransactionListSorter() {
 
         // If the input is valid, set the input list and sort it
         setIputList(value);
-        createList();
         sortList();
     }
 
     function handleToggleSortOrder() {
-        
+
         let isValid = isValidList();
         if (!isValid) {
             alert('Please enter a valid list of numbers.');
