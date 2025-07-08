@@ -33,9 +33,16 @@ export const useTransactionListSorter = create<State & Actions>((set) => ({
 
     toggleSortOrder: () => set((state) => ({isAscending: !state.isAscending})),
     setListInput: (input) => {
-        
+        const newListToSort: number[] = [];
+        input
+        .split(',')
+        .forEach((val) => {
+            const trimmedVal = val.trim();
+            newListToSort.push(parseFloat(trimmedVal));
+        });
         set({
         ...initialState,
+        createdList: newListToSort,
         listInput: input,
         errorList: []
     });},
