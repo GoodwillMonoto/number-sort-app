@@ -20,8 +20,6 @@ export default function TextInputPrimary({onChange,placeholder,value,disabled,on
       }}
       type="text"
       className="
-            flex-grow
-            pl-5
             bg-transparent
             focus:outline-none
             border-transparent

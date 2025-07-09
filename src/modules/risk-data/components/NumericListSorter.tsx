@@ -11,8 +11,8 @@ export default function NumericListSorter() {
     const toggleSortOrder = useNumericListSorter(state => state.toggleSortOrder);
     const createList = useNumericListSorter(state => state.createList);
     const setInput = useNumericListSorter(state => state.setInput);
-    const setErrorList = useNumericListSorter(state => state.setErrorList);
     const setIsValid = useNumericListSorter(state => state.setIsValid);
+    const validateList = useNumericListSorter(state => state.validateList);
 
 
     const sorterState = useNumericListSorter(useShallow (state => ({
@@ -22,6 +22,8 @@ export default function NumericListSorter() {
         errorList: state.errorList,
         createdList: state.createdList,
         isValid: state.isValidInput,
+        containsEmptyValues: state.containsEmptyValues,
+        containsNonNumerics: state.containsNonNumerics,
     })));
 
     const [value, setValue] = React.useState(sorterState.listInput);
@@ -43,10 +45,21 @@ export default function NumericListSorter() {
     }, [sorterState.sortedList]);
     
     useEffect(() => {
-        // Update the output when the error list changes
-        console.log('errorList changed', sorterState.errorList);
-        setErrorOutput(sorterState.errorList.join(', '));   
-    }, [sorterState.errorList]);
+        if(sorterState.containsEmptyValues) {
+
+            setErrorMessage('Error: Empty Values found in list');
+        }
+        else if(sorterState.containsNonNumerics) {
+            setErrorMessage('Error: Invalid Values found in list');
+        }
+        else if ( sorterState.containsNonNumerics && sorterState.containsEmptyValues) {
+            setErrorMessage('Error: Invalid Values and empty values found in list');
+        }
+        else{
+            setErrorMessage('Error: Unknown error in list');
+        }
+        setErrorOutput(sorterState.errorList.join(',\n '));   
+    }, [sorterState.errorList, sorterState.containsEmptyValues, sorterState.containsNonNumerics]);
 
     function handleListInputChange(e :ChangeEvent<HTMLInputElement>) {
         setInput(e.target.value);
@@ -54,61 +67,13 @@ export default function NumericListSorter() {
 
     function isValidList() {
         try {
-           let containsEmptyValues = false;
-           let containsNonNumerics = false;
-           let previousValue :string | null = null;
-           let hasPreviousValue = false;
-           const errors: string[] = [];
            let isValid = false;
-            sorterState.listInput
-                .split(',')
-                .forEach((val) => {
-                     const trimmedVal = val.trim();
-                     if (trimmedVal === '') {
-                         containsEmptyValues = true;
-                         if (hasPreviousValue) {
-                             errors.push('Empty Value after ' + previousValue);
-                         } else {
-                             errors.push('Empty Value at start of list');
-                         }
-                     } else if (isNaN(Number(trimmedVal))) {
-                         containsNonNumerics = true;
-                         errors.push(trimmedVal);
-                         previousValue = trimmedVal;
-                     }
-                     else
-                     {
-                         previousValue = trimmedVal;
-                     }
-                     hasPreviousValue = true;
-                });
-
-
-            isValid = errors.length === 0;
-
-            if (!isValid) {
-                console.log('Invalid input:', errors);
-
-                if(containsEmptyValues) {
-
-                    setErrorMessage('Error: Empty Values found in list');
-                }
-                else if ( containsNonNumerics && containsEmptyValues) {
-                    setErrorMessage('Error: Invalid Values and empty values found in list');
-                }
-                else if(containsNonNumerics) {
-                    setErrorMessage('Error: Invalid Values found in list');
-                }
-                else{
-                    setErrorMessage('Error: Unknown error in list');
-                }
-
-                setIsValid(false);
-                setErrorList(errors);
+           isValid = validateList(sorterState.listInput);
+            console.log('isValidList', isValid);
+            if (!isValid) {;
                 setOutput('');
             } else {
                 setErrorOutput('');
-                setIsValid(true);
             }
 
            return isValid;
@@ -122,7 +87,6 @@ export default function NumericListSorter() {
 
     function handleSortSubmit() {
         let validated = isValidList();
-        setIsValid(validated || false);
 
         if (!validated) {
             return;
@@ -135,7 +99,6 @@ export default function NumericListSorter() {
     function handleToggleSortOrder() {
 
         let validated = isValidList();
-        setIsValid(validated);
 
         if (!validated) {
             return;

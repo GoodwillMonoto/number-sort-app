@@ -8,6 +8,8 @@ type State = {
     errorList: string[];
     createdList: number[];
     isValidInput : boolean;
+    containsEmptyValues: boolean;
+    containsNonNumerics: boolean;
 };
 
 type Actions = {
@@ -18,6 +20,8 @@ type Actions = {
     clearList: () => void;
     setErrorList: (errorList: string[]) => void;
     setIsValid: (isValid: boolean) => void;
+    validateList: (input:string) => boolean;
+    
 
 };
 
@@ -28,7 +32,9 @@ const initialState: State = {
     sortedList: [],
     errorList: [],
     createdList: [],
-    isValidInput: false
+    isValidInput: false,
+    containsEmptyValues: false,
+    containsNonNumerics: false
 };
 
 
@@ -67,6 +73,49 @@ export const useNumericListSorter = create<State & Actions>((set) => ({
 
             return {sortedList: sorted.map(String)};
         }),
+    validateList: (input:string) => {
+        let containsEmptyValues = false;
+        let containsNonNumerics = false;
+        let previousValue :string | null = null;
+        let hasPreviousValue = false;
+        const errors: string[] = [];
+        let isValid = false;
+        
+        console.log('Validating input:', input);
+        input
+        .split(',')
+        .forEach((val) => {
+             const trimmedVal = val.trim();
+                console.log('Validating value:', trimmedVal);
+             if (trimmedVal === '') {
+                 containsEmptyValues = true;
+                 if (hasPreviousValue) {
+                     errors.push('Empty Value after ' + previousValue);
+                 } else {
+                     errors.push('Empty Value at start of list');
+                 }
+             } else if (isNaN(Number(trimmedVal))) {
+                 containsNonNumerics = true;
+                 errors.push(trimmedVal);
+                 previousValue = trimmedVal;
+             }
+             else
+             {
+                 previousValue = trimmedVal;
+             }
+             hasPreviousValue = true;
+        });
+        isValid = errors.length === 0;
+        console.log('Validation Result:',
+            isValid)
+
+        set({ isValidInput: isValid , 
+            errorList: errors, 
+            containsEmptyValues : containsEmptyValues, 
+            containsNonNumerics : containsNonNumerics});
+
+        return isValid;
+    },
     clearList: () => set(() => ({
         ...initialState
     }))
