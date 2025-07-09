@@ -7,15 +7,18 @@ type State = {
     sortedList: string[];
     errorList: string[];
     createdList: number[];
+    isValidInput : boolean;
 };
 
 type Actions = {
+    setInput: (input: string) => void;
     toggleSortOrder: () => void;
-    setListInput: (input: string) => void;
-    createList: () => void;
+    createList: (input: string) => void;
     sortList: () => void;
-    isValidList: () => boolean;
     clearList: () => void;
+    setErrorList: (errorList: string[]) => void;
+    setIsValid: (isValid: boolean) => void;
+
 };
 
 
@@ -24,41 +27,34 @@ const initialState: State = {
     listInput: '',
     sortedList: [],
     errorList: [],
-    createdList: []
+    createdList: [],
+    isValidInput: false
 };
 
 
-export const useTransactionListSorter = create<State & Actions>((set) => ({
+export const useNumericListSorter = create<State & Actions>((set) => ({
     ...initialState,
-
+    setInput: (input: string) => set({listInput: input}),
+    setErrorList: (errorList: string[]) => set({errorList:errorList}),
+    setIsValid: (isValid: boolean) => set({isValidInput:isValid}),
     toggleSortOrder: () => set((state) => ({isAscending: !state.isAscending})),
-    setListInput: (input) => {
+    createList: (input: string) => {
         const newListToSort: number[] = [];
         input
         .split(',')
         .forEach((val) => {
             const trimmedVal = val.trim();
-            newListToSort.push(parseFloat(trimmedVal));
+            if(trimmedVal !== '' && !isNaN(Number(trimmedVal))) 
+            {
+                console.log('Adding value to list:', trimmedVal);
+                newListToSort.push(parseFloat(trimmedVal));
+            }
+            
         });
         set({
-        ...initialState,
         createdList: newListToSort,
-        listInput: input,
         errorList: []
     });},
-    createList: () => {
-        
-        set((state) => {
-            const newListToSort: number[] = [];
-            state.listInput
-                .split(',')
-                .forEach((val) => {
-                    const trimmedVal = val.trim();
-                    newListToSort.push(parseFloat(trimmedVal));
-                });
-            return {createdList: newListToSort, errorList: []};
-        });
-    },
     sortList: () =>
         set((state) => {
             if (state.errorList.length > 0 || state.createdList.length === 0) {
@@ -71,19 +67,6 @@ export const useTransactionListSorter = create<State & Actions>((set) => ({
 
             return {sortedList: sorted.map(String)};
         }),
-    isValidList: () => {        
-        let isValid = true;
-        set((state) => {
-            state.errorList = [];
-            const errors = state.listInput
-                .split(',')
-                .map((val) => val.trim())
-                .filter((trimmedVal) => trimmedVal === '' || isNaN(Number(trimmedVal)));
-            isValid = errors.length === 0;
-            return { errorList: errors };
-        });
-        return isValid;
-    },
     clearList: () => set(() => ({
         ...initialState
     }))

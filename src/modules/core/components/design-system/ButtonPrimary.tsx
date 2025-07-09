@@ -10,17 +10,15 @@ type Props = {
 export default function ButtonPrimary({text,disabled,onClick}: Props) {
   return (
     
-    <button
+    <button 
+      className="absolute right-2 flex  pl-2 pr-2 flex-row  items-center bg-red-400 text-white rounded-full  cursor-pointer "
       onClick={onClick}
       disabled={disabled}
       
     >  
-    <div className="flex flex-row items-center bg-red-400 text-white rounded-full pr-2 cursor-pointer mx-2" >  
-      <FaSort size={34} 
-      
+      <FaSort size={25} 
       /> 
       {text}  
-    </div>  
     </button>
   )
 }

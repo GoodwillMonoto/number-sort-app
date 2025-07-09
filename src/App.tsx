@@ -1,13 +1,12 @@
 
 import './App.css';
-import NumberSort from './Components/NumberSort';
-import TransactionListSorter from './modules/risk-data/components/TransactionListSorter';
+import NumericListSorter from './modules/risk-data/components/NumericListSorter';
 
 function App() {
   return (
     <div className=''>
       
-      <TransactionListSorter />
+      <NumericListSorter />
     </div>
   );
 }
