@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+### `'Node and npm (Node Package Manager) required'`
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ### ` Navigate to  folder  named 'number-sort-app'`
