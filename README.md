@@ -35,27 +35,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-# Design Decisions
 
-I decided to structure the project around modules thus allowing room for the project to grow when needed.
-
-I opted to externalise most of the logic out of the component to allow better readability  and testing.
-
-To maintain simplicity in handling state I made use of zustand, a lightweight state management library.
-
-# Testing
-
-To test the component I would  first identify the core areas functionality.
-
-I would then prepare a list of test cases for the individual areas.
-
-I would test both path success and failure paths.
-
-I would ensure input validation done and security tests are conducted as well.
-
-I would also ensure to include tests that evaluate performance
-
-I would conduct these tests with a test library such as Jest.
 
 
 
